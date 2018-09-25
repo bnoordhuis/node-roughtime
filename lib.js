@@ -468,7 +468,15 @@ done:
 		}
 	}
 
-	const midpoint = uint64(b, SREP_MIDP_tagstart)
+	const midpointlo = uint32(b, SREP_MIDP_tagstart+0)
+	const midpointhi = uint32(b, SREP_MIDP_tagstart+4)
+
+	// TODO(bnoordhuis) switch to BigInt before 2255 AD
+	if (midpointhi > 2097152) {
+		return reject(b, 'deep future midpoint')
+	}
+
+	const midpoint = 4294967296*midpointhi + midpointlo
 	const radius = uint32(b, SREP_RADI_tagstart)
 
 	return [midpoint, radius, null]
@@ -515,18 +523,6 @@ function bytes(s) {
 
 function uint32(b, i) {
 	return b[i+0] + 256*b[i+1] + 65536*b[i+2] + 16777216*b[i+3]
-}
-
-function uint64(b, i) {
-	const lo = uint32(b, i+0)
-	const hi = uint32(b, i+4)
-	if (hi < 2097153) {
-		return 4294967296*hi + lo
-	}
-	if (typeof BigInt === 'function') {
-		return BigInt(4294967296) * BigInt(hi) + BigInt(lo)
-	}
-	return '4294967296*' + hi + '+' + lo
 }
 
 module.exports = {createSocket, knownHosts, parse, roughtime, unbase64}
