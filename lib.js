@@ -468,15 +468,36 @@ done:
 		}
 	}
 
-	const midpointlo = uint32(b, SREP_MIDP_tagstart+0)
-	const midpointhi = uint32(b, SREP_MIDP_tagstart+4)
+	let midpoint
+	let mintime
+	let maxtime
+	let ok
 
 	// TODO(bnoordhuis) switch to BigInt before 2255 AD
-	if (midpointhi > 2097152) {
+	if ([midpoint, ok] = uint64(b, SREP_MIDP_tagstart), !ok) {
 		return reject(b, 'deep future midpoint')
 	}
 
-	const midpoint = 4294967296*midpointhi + midpointlo
+	if ([mintime, ok] = uint64(b, CERT_DELE_MINT_tagstart), !ok) {
+		return reject(b, 'deep future mintime')
+	}
+
+	if ([maxtime, ok] = uint64(b, CERT_DELE_MAXT_tagstart), !ok) {
+		return reject(b, 'deep future maxtime')
+	}
+
+	if (maxtime < mintime) {
+		return reject(b, 'maxtime < mintime')
+	}
+
+	if (midpoint < mintime) {
+		return reject(b, 'midpoint < mintime')
+	}
+
+	if (midpoint > maxtime) {
+		return reject(b, 'midpoint > maxtime')
+	}
+
 	const radius = uint32(b, SREP_RADI_tagstart)
 
 	return [midpoint, radius, null]
@@ -523,6 +544,17 @@ function bytes(s) {
 
 function uint32(b, i) {
 	return b[i+0] + 256*b[i+1] + 65536*b[i+2] + 16777216*b[i+3]
+}
+
+function uint64(b, i) {
+	const lo = uint32(b, i+0)
+	const hi = uint32(b, i+4)
+
+	if (hi > 2097152) {
+		return [-1, false]
+	}
+
+	return [4294967296*hi + lo, true]
 }
 
 module.exports = {createSocket, knownHosts, parse, roughtime, unbase64}
