@@ -1,6 +1,6 @@
 {
   "name": "roughtime",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Secure time synchronisation",
   "keywords": ["roughtime", "time"],
   "homepage": "https://github.com/bnoordhuis/node-roughtime",
