@@ -1,0 +1,26 @@
+{
+  "name": "roughtime",
+  "version": "0.0.1",
+  "description": "Secure time synchronisation",
+  "keywords": ["roughtime", "time"],
+  "homepage": "https://github.com/bnoordhuis/node-roughtime",
+  "author": {
+    "name": "Ben Noordhuis",
+    "email": "info@bnoordhuis.nl",
+    "url": "http://bnoordhuis.nl/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bnoordhuis/node-roughtime"
+  },
+  "engines": {
+    "node": ">=6.0.0"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "tweetnacl": "1.0.0"
+  },
+  "scripts": {
+    "test": "node test.js"
+  }
+}
